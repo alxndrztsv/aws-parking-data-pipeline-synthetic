@@ -1,0 +1,13 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY requirements-synthetic.txt .
+
+RUN pip install --no-cache-dir -r requirements-synthetic.txt
+
+COPY scripts ./scripts
+
+WORKDIR /app/scripts
+
+CMD ["python", "generate_synthetic_data.py"]

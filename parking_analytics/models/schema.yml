@@ -1,0 +1,114 @@
+version: 2
+
+models:
+  - name: stg_parking_transactions
+    description: "Cleaned and typed staging layer for all parking transactions"
+    columns:
+      - name: system_id
+        description: "Unique transaction identifier"
+        tests:
+          - not_null
+          - unique
+
+      - name: terminal_timestamp
+        description: "Timestamp when transaction was recorded by the terminal"
+        tests:
+          - not_null
+
+      - name: amount
+        description: "Transaction amount in EUR"
+        tests:
+          - not_null
+
+  - name: dim_parks
+    description: "Park dimension table"
+    columns:
+      - name: park_id
+        description: "Unique park identifier"
+        tests:
+          - not_null
+          - unique
+
+      - name: park_name
+        description: "Name of the parking facility"
+        tests:
+          - not_null
+
+  - name: dim_terminals
+    description: "Terminal dimension table"
+    columns:
+      - name: terminal_pk
+        description: "Composite unique identifier (terminal_id + '-' + park_id)"
+        tests:
+          - not_null
+          - unique
+
+      - name: terminal_id
+        description: "Unique terminal identifier"
+        tests:
+          - not_null
+      
+      - name: park_id
+        description: "Foreign key linking to the park dimension"
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_parks')
+                field: park_id
+      
+      - name: terminal_description
+        description: "Human-readable description of the terminal"
+        tests:
+          - not_null
+
+  - name: dim_dates
+    description: "Date dimension table"
+    columns:
+      - name: date_id
+        description: "Unique date identifier"
+        tests:
+          - not_null
+          - unique
+
+  - name: fact_daily_analysis
+    description: "Payment analysis fact table - breakdown by payment method"
+    columns:
+      - name: transaction_date
+        description: "Date of the transaction"
+        tests:
+          - not_null
+
+      - name: payment_method
+        description: "Payment method used"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Coins", "CARD"]
+
+  - name: fact_daily_park_analysis
+    description: "Park analysis fact table - breakdown by park"
+    columns:
+      - name: transaction_date
+        description: "Date of the transaction"
+        tests:
+          - not_null
+
+      - name: park_id
+        description: "Unique park identifier"
+        tests:
+          - not_null
+
+  - name: fact_daily_terminal_analysis
+    description: "Terminal analysis fact table - breakdown by terminal"
+    columns:
+      - name: transaction_date
+        description: "Date of the transaction"
+        tests:
+          - not_null
+
+      - name: terminal_id
+        description: "Unique terminal identifier"
+        tests:
+          - not_null

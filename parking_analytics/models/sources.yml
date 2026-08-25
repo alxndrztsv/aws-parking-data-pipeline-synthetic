@@ -1,0 +1,18 @@
+version 2:
+
+sources:
+  - name: parking-pipeline-dev-parking-db
+    description: "Raw parking transaction data from the Silver layer"
+    schema: parking-pipeline-dev-parking-db
+    tables:
+      - name: processed
+        description: "Granular parking transactions from Silver bucket"
+        columns:
+          - name: System ID
+            description: "Unique transaction identifier"
+          - name: Terminal Date
+            description: "Timestamp when transaction was recorded"
+          - name: Park
+            description: "Name of the parking facility"
+          - name: Amount
+            description: "Transaction amount in EUR"

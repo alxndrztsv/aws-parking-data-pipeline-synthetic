@@ -1,0 +1,12 @@
+parking_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: athena
+      region_name: eu-west-1
+      database: awsdatacatalog  # aws catalog name
+      schema: parking-pipeline-dev-parking-db  # glue database name
+      work_group: primary
+      s3_staging_dir: s3://parking-pipeline-dev-athena-dbt/athena-results/
+      s3_data_dir: s3://parking-pipeline-dev-athena-dbt/dbt-tables/      
+      threads: 4  # for performance

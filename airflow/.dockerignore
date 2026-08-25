@@ -1,0 +1,7 @@
+# Context for airflow/Dockerfile: only requirements-airflow.txt is COPY'd
+.env
+logs
+config
+__pycache__
+*.pyc
+docker-compose.yaml

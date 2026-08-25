@@ -1,0 +1,41 @@
+# Context for Dockerfile.synthetic: only requirements-synthetic.txt and scripts/ are needed
+
+# VCS / CI
+.git
+.github
+
+# Python envs and caches
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+
+# Secrets
+.env
+*.env
+terraform.tfvars
+keys.txt
+
+# Terraform
+terraform
+terraform-bootstrap
+.terraform
+*.tfstate
+*.tfstate.*
+
+# Project parts not needed for the synthetic image
+airflow
+parking_analytics
+glue_scripts
+lambda_functions
+data
+logs
+*.log
+*.zip
+
+# Docs / meta
+README.md
+Makefile
+.gitignore
+.dockerignore

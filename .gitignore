@@ -1,0 +1,33 @@
+# Secrets and environment files
+*.env
+terraform.tfvars
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.ruff_cache/
+
+# Generated files
+*.zip
+data/bronze/
+data/silver/
+
+# Logs (dbt writes logs/ into whichever directory it is invoked from)
+logs/
+*.log
+
+# Airflow local runtime files
+airflow/*.pid
+airflow/config/airflow.cfg
+
+# dbt
+parking_analytics/.user.yml
