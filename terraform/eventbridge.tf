@@ -3,11 +3,11 @@ resource "aws_iam_role" "eventbridge_role" {
   name = "${local.prefix}-eventbridge-role"
 
   assume_role_policy = jsonencode({
-    Version   = "2012-10-17"    
+    Version = "2012-10-17"
     Statement = [
       {
         Action = "sts:AssumeRole"
-        Effect = "Allow"        
+        Effect = "Allow"
         Principal = {
           Service = "events.amazonaws.com"
         }
@@ -24,13 +24,13 @@ resource "aws_iam_role_policy" "eventbridge_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"        
-        Action   = "states:StartExecution"        
+        Effect   = "Allow"
+        Action   = "states:StartExecution"
         Resource = aws_sfn_state_machine.parking_pipeline_orchestrator.arn
       },
       {
-        Effect   = "Allow"        
-        Action   = "sns:Publish"        
+        Effect   = "Allow"
+        Action   = "sns:Publish"
         Resource = aws_sns_topic.parking_pipeline_alerts.arn
       }
     ]
@@ -50,15 +50,15 @@ resource "aws_cloudwatch_event_target" "step_function_target" {
   target_id = "StepFunctionTarget"
   arn       = aws_sfn_state_machine.parking_pipeline_orchestrator.arn
   role_arn  = aws_iam_role.eventbridge_role.arn
-  
+
   retry_policy {
     maximum_event_age_in_seconds = 3600
     maximum_retry_attempts       = 3
-	}
+  }
 }
 
 resource "aws_cloudwatch_event_rule" "parking_pipeline_failed" {
-  name = "${var.project_name}-pipeline-failed"
+  name        = "${var.project_name}-pipeline-failed"
   description = "Catches Step Functions execution failures"
 
   event_pattern = jsonencode({
@@ -73,8 +73,8 @@ resource "aws_cloudwatch_event_rule" "parking_pipeline_failed" {
 
 # EventBridge target to send failure events to SNS
 resource "aws_cloudwatch_event_target" "failure_notification" {
-  rule = aws_cloudwatch_event_rule.parking_pipeline_failed.name
+  rule      = aws_cloudwatch_event_rule.parking_pipeline_failed.name
   target_id = "SNSFailureTarget"
-  arn  = aws_sns_topic.parking_pipeline_alerts.arn
+  arn       = aws_sns_topic.parking_pipeline_alerts.arn
   role_arn  = aws_iam_role.eventbridge_role.arn
 }

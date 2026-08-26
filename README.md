@@ -6,18 +6,7 @@ The data is **synthetic** — generated locally to mimic real pay-and-display pa
 
 ## Architecture
 
-```
- EventBridge (daily, 08:00 UTC)
-        │
-        ▼
- Step Functions ──▶ Glue job ──▶ Glue crawler ──▶ Glue job ──▶ Lambda ──▶ SES
-                    bronze→silver                 silver→gold   email       report
-                        │                             │          report    email
-                        ▼                             ▼
-                  S3: bronze → silver           S3: gold (weekly summary)
-        │
-        └──(on failure)──▶ SNS ──▶ email alert
-```
+![Architecture Diagram](docs/architecture.png)
 
 Pipeline stages:
 
@@ -29,6 +18,14 @@ Pipeline stages:
 6. **Alerting** — any stage failure is published to an SNS topic and delivered by email.
 
 An alternative orchestration path runs the same flow (plus a dbt analytics layer) from **Apache Airflow** — see [Airflow orchestration](#airflow-orchestration).
+
+## Pipeline execution
+
+![Step Functions Execution](docs/step-functions.png)
+
+## Processed table schema
+
+![Processed Table](docs/glue-table.png)
 
 ## Tech stack
 
