@@ -1,9 +1,10 @@
-import os
 import csv
 import json
-import boto3
-import traceback
+import os
 from io import StringIO
+
+import boto3
+import botocore.exceptions
 
 
 # Initialize AWS clients
@@ -100,6 +101,17 @@ def lambda_handler(event, context):
         print(f"Email sent successfully! Message ID: {response['MessageId']}")
         return {"statusCode": 200, "body": "Email sent successfully"}
         
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return {"statusCode": 500, "body": str(e)}
+    except botocore.exceptions.ClientError as e:
+        # Catches all AWS SDK (Boto3) errors (S3 missing bucket, SES permission issues, etc.)
+        print(f"AWS Service Error: {str(e)}")
+        return {"statusCode": 500, "body": f"AWS Error: {str(e)}"}
+        
+    except json.JSONDecodeError as e:
+        # Catches issues if the pointer file isn't valid JSON
+        print(f"JSON Parse Error: {str(e)}")
+        return {"statusCode": 500, "body": f"Data formatting error: {str(e)}"}
+        
+    except (KeyError, csv.Error) as e:
+        # Catches missing dictionary keys or CSV parsing failures
+        print(f"Data Processing Error: {str(e)}")
+        return {"statusCode": 500, "body": f"Data processing error: {str(e)}"}

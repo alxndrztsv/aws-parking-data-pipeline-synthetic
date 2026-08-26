@@ -1,17 +1,15 @@
-import sys
-import datetime
 import json
+import sys
+from datetime import datetime, timezone
 
 import boto3
 
-from awsglue.utils import getResolvedOptions
 from awsglue.context import GlueContext
 from awsglue.job import Job
+from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
-from pyspark.sql.functions import (
-    col, sum, count, avg, when, desc, 
-    round, to_date
-)
+from pyspark.sql.functions import avg, col, count, desc, round, sum, to_date, when
+
 
 # Initialize Glue Context
 sc = SparkContext()
@@ -33,7 +31,7 @@ print(f"Reading Silver data from: {source_path}")
 df = spark.read.option("header", "true").option("inferSchema", "true").csv(source_path)
 
 # Calculate dates for previous week
-now = datetime.datetime.now()
+now = datetime.now(tzinfo=timezone.utc)
 current_week_monday = now - datetime.timedelta(days=now.weekday())
 last_week_monday = current_week_monday - datetime.timedelta(days=7)
 last_week_sunday = current_week_monday - datetime.timedelta(days=1)

@@ -1,16 +1,16 @@
 import json
 import logging
 import os
-import yaml
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from airflow.decorators import dag, task
+from airflow.providers.amazon.aws.hooks.sns import SnsHook
 from airflow.providers.amazon.aws.operators.glue import GlueJobOperator
 from airflow.providers.amazon.aws.operators.glue_crawler import GlueCrawlerRunOperator
-from airflow.providers.amazon.aws.operators.lambda_function import LambdaInvokeFunctionOperator
-from airflow.providers.amazon.aws.hooks.sns import SnsHook
-
-from cosmos import DbtTaskGroup, ProjectConfig, ProfileConfig, ExecutionConfig
+from airflow.providers.amazon.aws.operators.lambda_function import (
+    LambdaInvokeFunctionOperator,
+)
+from cosmos import DbtTaskGroup, ExecutionConfig, ProfileConfig, ProjectConfig
 
 
 log = logging.getLogger(__name__)
@@ -58,7 +58,7 @@ def notify_failure(context):
         f"Task: {task_instance.task_id if task_instance else 'unknown'}\n"
         f"Run ID: {context.get('run_id')}\n"
         f"Execution Date: {logical_date}\n"
-        f"Error: {str(exception)}\n"
+        f"Error: {exception!s}\n"
         "Please check Airflow and CloudWatch logs."
     )
 
@@ -77,7 +77,7 @@ def notify_failure(context):
     dag_id = "parking_data_pipeline",
     description="Replaces AWS Step Functions with Airflow for parking data pipeline",
     schedule="0 6 * * 1",  # every monday at 06:00 UTC,
-    start_date=datetime(2026, 1, 1),
+    start_date=datetime(2026, 1, 1, tzinfo=timezone.utc),
     catchup=False,
     max_active_runs=1,
     tags=["parking", "aws", "etl", "weekly-report"],
@@ -109,7 +109,7 @@ def parking_data_pipeline():
         elif isinstance(response_payload, dict):
             result = response_payload
         else:
-            raise ValueError(f"Unsupported Lambda response type: {type(response_payload)}")
+            raise TypeError(f"Unsupported Lambda response type: {type(response_payload)}")
 
         log.info("Lambda response validated successfully.")
         if result.get("statusCode") != 200:

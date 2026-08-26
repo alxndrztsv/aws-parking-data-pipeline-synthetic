@@ -1,7 +1,7 @@
 import hashlib
 import os
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 from faker import Faker
@@ -144,9 +144,9 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main():
-    cities_to_test = ["Dublin", "Cork", "Galway"] 
+    cities_to_test = ["Dublin", "Cork", "Galway", "Wicklow", "Sligo"] 
     
-    end_date = datetime.now().replace(microsecond=0)
+    end_date = datetime.now(tzinfo=timezone.utc).replace(microsecond=0)
     start_date = end_date - timedelta(days=30)
 
     os.makedirs("../data/bronze", exist_ok=True)
@@ -158,7 +158,7 @@ def main():
         print(f"Processing {city}...")
         
         # 1. Generate RAW data (Bronze)
-        raw_df = generate_relevant_raw_data(city, start_date, end_date, rows=500)
+        raw_df = generate_relevant_raw_data(city, start_date, end_date, rows=1000)
         raw_df.to_csv(f"../data/bronze/{city}_raw.csv", index=False)
         
         # 2. Process data (Silver)
