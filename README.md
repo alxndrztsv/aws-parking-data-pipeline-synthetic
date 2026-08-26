@@ -87,7 +87,7 @@ Note the `github_actions_role_arn` output.
 
 ### 2. Configure GitHub
 
-- Repository **Variables**: `AWS_ROLE_ARN` (from the bootstrap output) and `AWS_REGION` (e.g. `eu-west-1`).
+- Repository **Variables** (Settings → Variables, or inside the `dev` environment): `AWS_ROLE_ARN` (from the bootstrap output), `AWS_REGION` (e.g. `eu-west-1`), `ENVIRONMENT` (e.g. `dev`), `PROJECT_NAME` (e.g. `parking-pipeline`), `SENDER_EMAIL`, `RECIPIENT_EMAIL`, `FAILURE_NOTIFICATION_EMAIL` (SES-verified addresses; put these in **Secrets** instead if you don't want the addresses visible in workflow logs, and switch `vars.` to `secrets.` in `cd.yml`).
 - Create a **`dev` environment** (Settings → Environments) and, optionally, add required reviewers — the CD `apply` job is gated on it.
 
 ### 3. Generate synthetic data

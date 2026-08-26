@@ -34,7 +34,14 @@ jobs:
 
       - name: Terraform plan
         working-directory: terraform
-        run: terraform plan -input=false -out=tfplan
+        run: |
+          terraform plan -input=false -out=tfplan \
+            -var="aws_region=${{ vars.AWS_REGION }}" \
+            -var="environment=${{ vars.ENVIRONMENT }}" \
+            -var="project_name=${{ vars.PROJECT_NAME }}" \
+            -var="sender_email=${{ secrets.SENDER_EMAIL }}" \
+            -var="recipient_email=${{ secrets.RECIPIENT_EMAIL }}" \
+            -var="failure_notification_email=${{ secrets.FAILURE_NOTIFICATION_EMAIL }}"
 
       - name: Upload plan
         uses: actions/upload-artifact@v4
