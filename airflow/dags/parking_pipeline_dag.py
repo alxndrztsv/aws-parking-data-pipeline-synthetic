@@ -12,7 +12,6 @@ from airflow.providers.amazon.aws.operators.lambda_function import (
 )
 from cosmos import DbtTaskGroup, ExecutionConfig, ProfileConfig, ProjectConfig
 
-
 log = logging.getLogger(__name__)
 
 # Configuration from environment variables

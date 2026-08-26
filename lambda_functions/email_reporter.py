@@ -6,7 +6,6 @@ from io import StringIO
 import boto3
 import botocore.exceptions
 
-
 # Initialize AWS clients
 s3 = boto3.client("s3")
 ses = boto3.client("ses", region_name="eu-west-1")
@@ -103,15 +102,15 @@ def lambda_handler(event, context):
         
     except botocore.exceptions.ClientError as e:
         # Catches all AWS SDK (Boto3) errors (S3 missing bucket, SES permission issues, etc.)
-        print(f"AWS Service Error: {str(e)}")
-        return {"statusCode": 500, "body": f"AWS Error: {str(e)}"}
+        print(f"AWS Service Error: {e!s}")
+        return {"statusCode": 500, "body": f"AWS Error: {e!s}"}
         
     except json.JSONDecodeError as e:
         # Catches issues if the pointer file isn't valid JSON
-        print(f"JSON Parse Error: {str(e)}")
-        return {"statusCode": 500, "body": f"Data formatting error: {str(e)}"}
+        print(f"JSON Parse Error: {e!s}")
+        return {"statusCode": 500, "body": f"Data formatting error: {e!s}"}
         
     except (KeyError, csv.Error) as e:
         # Catches missing dictionary keys or CSV parsing failures
-        print(f"Data Processing Error: {str(e)}")
-        return {"statusCode": 500, "body": f"Data processing error: {str(e)}"}
+        print(f"Data Processing Error: {e!s}")
+        return {"statusCode": 500, "body": f"Data processing error: {e!s}"}

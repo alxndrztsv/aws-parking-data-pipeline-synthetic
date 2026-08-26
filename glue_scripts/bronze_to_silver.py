@@ -1,11 +1,10 @@
 import sys
 
-from awsglue.utils import getResolvedOptions
-from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
 from pyspark.sql.functions import coalesce, col, concat, floor, lit, upper, when
-
 
 # Initialize Glue Context.
 sc = SparkContext()
