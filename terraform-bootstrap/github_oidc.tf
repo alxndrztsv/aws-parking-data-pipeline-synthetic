@@ -3,6 +3,29 @@ variable "github_repo" {
   type        = string
 }
 
+variable "github_owner_id" {
+  description = "Immutable GitHub owner (user/org) ID. Visible in the OIDC token sub claim: repo:OWNER@<id>/REPO@<id>:..."
+  type        = string
+  default     = ""
+}
+
+variable "github_repo_id" {
+  description = "Immutable GitHub repository ID. Visible in the OIDC token sub claim: repo:OWNER@<id>/REPO@<id>:..."
+  type        = string
+  default     = ""
+}
+
+locals {
+  github_repo_parts = split("/", var.github_repo)
+
+  # GitHub changed the OIDC sub claim format: newer tokens carry immutable
+  # numeric IDs (repo:OWNER@OWNER_ID/REPO@REPO_ID:*). Allow both formats.
+  github_sub_patterns = var.github_owner_id != "" && var.github_repo_id != "" ? [
+    "repo:${var.github_repo}:*",
+    "repo:${local.github_repo_parts[0]}@${var.github_owner_id}/${local.github_repo_parts[1]}@${var.github_repo_id}:*",
+  ] : ["repo:${var.github_repo}:*"]
+}
+
 data "tls_certificate" "github" {
   url = "https://token.actions.githubusercontent.com"
 }
@@ -32,7 +55,7 @@ data "aws_iam_policy_document" "github_assume_role" {
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repo}:*"]
+      values   = local.github_sub_patterns
     }
   }
 }

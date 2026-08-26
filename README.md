@@ -75,8 +75,13 @@ An alternative orchestration path runs the same flow (plus a dbt analytics layer
 ```bash
 cd terraform-bootstrap
 terraform init
-terraform apply -var="github_repo=<YOUR_GITHUB_USER>/<YOUR_REPO>"
+terraform apply \
+  -var="github_repo=<YOUR_GITHUB_USER>/<YOUR_REPO>" \
+  -var="github_owner_id=<OWNER_ID>" \
+  -var="github_repo_id=<REPO_ID>"
 ```
+
+`OWNER_ID` and `REPO_ID` are the immutable numeric IDs GitHub now embeds in the OIDC `sub` claim (`repo:OWNER@<OWNER_ID>/REPO@<REPO_ID>:...`). Look them up via the GitHub API: `https://api.github.com/users/<YOUR_GITHUB_USER>` (field `id`) and `https://api.github.com/repos/<YOUR_GITHUB_USER>/<YOUR_REPO>` (field `id`).
 
 Note the `github_actions_role_arn` output.
 
