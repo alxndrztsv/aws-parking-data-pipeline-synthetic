@@ -1,6 +1,6 @@
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import boto3
 from awsglue.context import GlueContext
@@ -30,9 +30,9 @@ df = spark.read.option("header", "true").option("inferSchema", "true").csv(sourc
 
 # Calculate dates for previous week
 now = datetime.now(tz=timezone.utc)
-current_week_monday = now - datetime.timedelta(days=now.weekday())
-last_week_monday = current_week_monday - datetime.timedelta(days=7)
-last_week_sunday = current_week_monday - datetime.timedelta(days=1)
+current_week_monday = now - timedelta(days=now.weekday())
+last_week_monday = current_week_monday - timedelta(days=7)
+last_week_sunday = current_week_monday - timedelta(days=1)
 
 # --- Gold Layer transformations ---
 # Step 1: Parse the date properly to ensure accurate filtering and sorting

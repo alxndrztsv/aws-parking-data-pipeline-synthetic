@@ -117,8 +117,8 @@ def process_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df["Total Duration"] = df["Total Duration"].apply(lambda x: format_duration_h_m(x) if pd.notna(x) else None)
     df["Paid Duration"] = df["Paid Duration"].apply(lambda x: format_duration_h_m(x) if pd.notna(x) else None)
 
-    # Clean up Payment Mean (COINS -> Coins)
-    df["Payment Mean"] = df["Payment Mean"].replace("COINS", "Coins")
+    # Clean up Payment Mean (COINS -> Coins, CARD -> Card)
+    df["Payment Mean"] = df["Payment Mean"].replace({"COINS": "Coins", "CARD": "Card"})
 
     # Add required empty columns
     df["Type"] = None

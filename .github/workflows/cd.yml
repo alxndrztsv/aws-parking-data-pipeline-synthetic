@@ -49,6 +49,14 @@ jobs:
           name: tfplan
           path: terraform/tfplan
 
+      # archive_file creates the zip during plan; the apply job runs on a
+      # different runner, so the zip must be carried over as an artifact.
+      - name: Upload lambda package
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-zip
+          path: lambda_functions/email_reporter.zip
+
   apply:
     needs: plan
     runs-on: ubuntu-latest
@@ -66,6 +74,12 @@ jobs:
         with:
           name: tfplan
           path: terraform
+
+      - name: Download lambda package
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-zip
+          path: lambda_functions
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

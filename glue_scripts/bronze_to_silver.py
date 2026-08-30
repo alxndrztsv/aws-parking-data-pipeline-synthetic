@@ -142,16 +142,17 @@ df = df.drop("total_duration_sec", "paid_duration_sec")
 df = df.withColumn(
     "payment_mean",
     when(upper(col("payment_mean")) == "COINS", "Coins")
+    .when(upper(col("payment_mean")) == "CARD", "Card")
     .otherwise(col("payment_mean"))
 )
 
-# Check 6: COINS should no longer exist
-coins_count = df.filter(
-    col("payment_mean") == "COINS"
+# Check 6: raw uppercase values should no longer exist
+raw_payment_count = df.filter(
+    col("payment_mean").isin(["COINS", "CARD"])
 ).limit(1).count()
 
-assert coins_count == 0, (
-    "payment_mean normalization failed: COINS still exists."
+assert raw_payment_count == 0, (
+    "payment_mean normalization failed: COINS or CARD still exists."
 )
 
 # Step 5: Add empty columns.
