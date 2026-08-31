@@ -85,7 +85,7 @@ models:
           - not_null
           - accepted_values:
               arguments:
-                values: ["Coins", "CARD"]
+                values: ["Coins", "Card"]
 
   - name: fact_daily_park_analysis
     description: "Park analysis fact table - breakdown by park"

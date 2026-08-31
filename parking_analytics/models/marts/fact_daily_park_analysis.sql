@@ -18,7 +18,7 @@ WITH daily_metrics AS (
         AVG(total_duration_minutes) AS avg_duration_minutes,
         AVG(paid_duration_minutes) AS avg_paid_duration_minutes,
         COUNT(CASE WHEN payment_method = 'Coins' THEN 1 END) AS coins_transactions,
-        COUNT(CASE WHEN payment_method = 'CARD' THEN 1 END) AS card_transactions
+        COUNT(CASE WHEN payment_method = 'Card' THEN 1 END) AS card_transactions
         
     FROM {{ ref('stg_parking_transactions') }}
     WHERE terminal_timestamp IS NOT NULL

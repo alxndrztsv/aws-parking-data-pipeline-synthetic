@@ -75,7 +75,7 @@ def notify_failure(context):
 @dag(
     dag_id = "parking_data_pipeline",
     description="Replaces AWS Step Functions with Airflow for parking data pipeline",
-    schedule="0 6 * * 1",  # every monday at 06:00 UTC,
+    schedule="0 8 * * 1",  # every monday at 08:00 UTC,
     start_date=datetime(2026, 1, 1, tzinfo=timezone.utc),
     catchup=False,
     max_active_runs=1,

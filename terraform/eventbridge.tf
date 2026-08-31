@@ -37,23 +37,23 @@ resource "aws_iam_role_policy" "eventbridge_policy" {
   })
 }
 
-# EventBridge schedule rule to trigger pipeline daily at 08:00 UTC
-resource "aws_cloudwatch_event_rule" "daily_parking_pipeline" {
-  name                = "${var.project_name}-daily-pipeline"
-  description         = "Triggers the parking data pipeline daily at 08:00 UTC"
-  schedule_expression = "cron(0 8 * * ? *)"
+# EventBridge schedule rule to trigger pipeline weekly on Mondays at 08:00 UTC
+resource "aws_cloudwatch_event_rule" "weekly_parking_pipeline" {
+  name                = "${var.project_name}-weekly-pipeline"
+  description         = "Triggers the parking data pipeline weekly on Mondays at 08:00 UTC"
+  schedule_expression = "cron(0 8 ? * MON *)"
 }
 
 # EventBridge target (points to Step Functions machine state)
 resource "aws_cloudwatch_event_target" "step_function_target" {
-  rule      = aws_cloudwatch_event_rule.daily_parking_pipeline.name
+  rule      = aws_cloudwatch_event_rule.weekly_parking_pipeline.name
   target_id = "StepFunctionTarget"
   arn       = aws_sfn_state_machine.parking_pipeline_orchestrator.arn
   role_arn  = aws_iam_role.eventbridge_role.arn
 
   retry_policy {
     maximum_event_age_in_seconds = 3600
-    maximum_retry_attempts       = 3
+    maximum_retry_attempts       = 2
   }
 }
 

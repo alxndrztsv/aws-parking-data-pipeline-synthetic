@@ -68,7 +68,7 @@ data "archive_file" "lambda_zip" {
   output_path = "../lambda_functions/email_reporter.zip"
 }
 
-# Create Lambda Function
+# Create Lambda function
 resource "aws_lambda_function" "email_reporter" {
   filename         = data.archive_file.lambda_zip.output_path
   function_name    = "${local.prefix}-email-reporter"

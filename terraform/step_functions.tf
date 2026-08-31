@@ -62,7 +62,7 @@ resource "aws_iam_role_policy" "step_functions_policy" {
   })
 }
 
-# State Functions State Machine definition
+# Step Functions State Machine definition
 resource "aws_sfn_state_machine" "parking_pipeline_orchestrator" {
   name     = "${local.prefix}-pipeline-orchestrator"
   role_arn = aws_iam_role.step_functions_role.arn
@@ -120,7 +120,7 @@ resource "aws_sfn_state_machine" "parking_pipeline_orchestrator" {
         Next = "SilverCrawlerWait"
       }
 
-      # 2. Wait for a short period before checking status (prevents API throttling)
+      # 2. Wait for a short period before checking status
       SilverCrawlerWait = {
         Type    = "Wait"
         Seconds = 30
@@ -188,7 +188,7 @@ resource "aws_sfn_state_machine" "parking_pipeline_orchestrator" {
         Next = "SendEmailReport"
       }
 
-      # Send email lambda function
+      # Send email Lambda function
       SendEmailReport = {
         Type     = "Task"
         Resource = "arn:aws:states:::lambda:invoke"
