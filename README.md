@@ -2,7 +2,7 @@
 
 # AWS Parking Data Pipeline
 
-An end-to-end data pipeline for parking meter transactions in Ireland (Dublin, Cork, Galway), built on a medallion architecture (Bronze → Silver → Gold) with fully automated AWS infrastructure.
+An end-to-end data pipeline for parking meter transactions in Ireland (Dublin, Cork, Galway, Wicklow, Sligo), built on a medallion architecture (Bronze → Silver → Gold) with fully automated AWS infrastructure.
 
 The data is **synthetic** — generated locally to mimic real pay-and-display parking exports — so the project can be run end-to-end on any AWS account without external data sources.
 
@@ -140,7 +140,7 @@ Note the `github_actions_role_arn` output.
 
 ### 2. Configure GitHub
 
-- Repository **Variables** (Settings → Variables, or inside the `dev` environment): `AWS_ROLE_ARN` (from the bootstrap output), `AWS_REGION` (e.g. `eu-west-1`), `ENVIRONMENT` (e.g. `dev`), `PROJECT_NAME` (e.g. `parking-pipeline`), `SENDER_EMAIL`, `RECIPIENT_EMAIL`, `FAILURE_NOTIFICATION_EMAIL` (SES-verified addresses; put these in **Secrets** instead if you don't want the addresses visible in workflow logs, and switch `vars.` to `secrets.` in `cd.yml`).
+- Repository **Variables** (Settings → Variables, or inside the `dev` environment): `AWS_ROLE_ARN` (from the bootstrap output), `AWS_REGION` (e.g. `eu-west-1`), `ENVIRONMENT` (e.g. `dev`), `PROJECT_NAME` (e.g. `parking-pipeline`), `SENDER_EMAIL`, `RECIPIENT_EMAIL`, `FAILURE_NOTIFICATION_EMAIL` (SES-verified addresses; put these in **Secrets**).
 - Create a **`dev` environment** (Settings → Environments) and, optionally, add required reviewers — the CD `apply` job is gated on it.
 
 ### 3. Generate synthetic data
@@ -179,7 +179,7 @@ The apply also uploads the Glue scripts to the `scripts` bucket and the Bronze C
 ### 6. Verify
 
 - Confirm the **SNS subscription** email (failure alerts).
-- Trigger the pipeline: start a Step Functions execution manually, or wait for the daily 08:00 UTC EventBridge schedule. Check the SES report email afterwards.
+- Trigger the pipeline: start a Step Functions execution manually, or wait for the weekly 08:00 UTC EventBridge schedule. Check the SES report email afterwards.
 - In the SES sandbox, the recipient must confirm the subscription and be verified, otherwise delivery silently fails.
 
 ## Airflow orchestration
@@ -190,7 +190,7 @@ The `airflow/` directory contains a local Airflow 3 stack (docker-compose, Celer
 bronze_to_silver → silver_crawler → silver_to_gold → dbt_models → send_email_report → verify_email
 ```
 
-The DAG runs weekly (Mondays 06:00 UTC) and publishes task failures to the same SNS topic.
+The DAG runs weekly (Mondays 08:00 UTC) and publishes task failures to the same SNS topic.
 
 ```bash
 make airflow-env    # creates airflow/.env from airflow/.env.example — fill in real values
@@ -293,6 +293,6 @@ Inside Airflow the same project is executed per-model as task groups by Cosmos.
 ## Cleanup
 
 ```bash
-cd terraform && terraform destroy          # main stack
+cd terraform && terraform destroy                # main stack
 cd ../terraform-bootstrap && terraform destroy   # state bucket + OIDC role (local state)
 ```
