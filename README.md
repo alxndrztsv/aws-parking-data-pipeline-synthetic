@@ -9,7 +9,7 @@ The data is **synthetic** — generated locally to mimic real pay-and-display pa
 ## Architecture
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/alxndrztsv/aws-parking-data-pipeline-synthetic/main/docs/architecture.png" target="_blank">
+  <a href="https://raw.githubusercontent.com/alxndrztsv/aws-parking-data-pipeline-synthetic/main/docs/architecture_diagram.png" target="_blank">
     <img src="docs/architecture_diagram.png" alt="Architecture diagram" width="622" />
   </a>
   <br>
