@@ -1,4 +1,4 @@
-[![CI Pipeline](https://github.com/alxndrztsv/aws-parking-data-pipeline-synthetic/actions/workflows/ci.yml/badge.svg)](https://github.com/alxndrztsv/aws-parking-data-pipeline-synthetic/actions/workflows/ci.yml) [![CD Pipeline](https://github.com/alxndrztsv/aws-parking-data-pipeline-synthetic/actions/workflows/cd.yml/badge.svg)](https://github.com/alxndrztsv/aws-parking-data-pipeline-synthetic/actions/workflows/cd.yml)
+[![CI Pipeline](https://github.com/alxndrztsv/aws-parking-data-pipeline-synthetic/actions/workflows/ci.yml/badge.svg)](https://github.com/alxndrztsv/aws-parking-data-pipeline-synthetic/actions/workflows/ci.yml)
 
 # AWS Parking Data Pipeline
 
@@ -92,7 +92,7 @@ An alternative orchestration path runs the same flow (plus a dbt analytics layer
 | Analytics | dbt Core with `dbt-athena` adapter |
 | Reporting | Lambda + SES |
 | Alerting | SNS + EventBridge failure rules |
-| CI/CD | GitHub Actions, OIDC (no static AWS keys) |
+| CI | GitHub Actions |
 | Tooling | Python 3.13, Docker, Make, Ruff |
 
 ## Repository structure
@@ -107,7 +107,7 @@ An alternative orchestration path runs the same flow (plus a dbt analytics layer
 ├── terraform/                # Main infrastructure
 ├── airflow/                  # Local Airflow (docker-compose) + DAG
 ├── parking_analytics/        # dbt project (Athena)
-└── .github/workflows/        # CI (lint + validate) and CD (plan/apply)
+└── .github/workflows/        # CI (lint + validate)
 ```
 
 ## Prerequisites
@@ -141,7 +141,7 @@ Note the `github_actions_role_arn` output.
 ### 2. Configure GitHub
 
 - Repository **Variables** (Settings → Variables, or inside the `dev` environment): `AWS_ROLE_ARN` (from the bootstrap output), `AWS_REGION` (e.g. `eu-west-1`), `ENVIRONMENT` (e.g. `dev`), `PROJECT_NAME` (e.g. `parking-pipeline`), `SENDER_EMAIL`, `RECIPIENT_EMAIL`, `FAILURE_NOTIFICATION_EMAIL` (SES-verified addresses; put these in **Secrets**).
-- Create a **`dev` environment** (Settings → Environments) and, optionally, add required reviewers — the CD `apply` job is gated on it.
+- Create a **`dev` environment** (Settings → Environments).
 
 ### 3. Generate synthetic data
 
@@ -174,7 +174,7 @@ make tf-plan
 make tf-apply
 ```
 
-The apply also uploads the Glue scripts to the `scripts` bucket and the Bronze CSVs to `bronze/raw/`. Alternatively, push to the default branch and approve the CD `apply` job (see [CI/CD](#cicd)).
+The apply also uploads the Glue scripts to the `scripts` bucket and the Bronze CSVs to `bronze/raw/`. Alternatively, push to the default branch and approve the CD `apply` job.
 
 ### 6. Verify
 
@@ -267,10 +267,9 @@ Inside Airflow the same project is executed per-model as task groups by Cosmos.
   </tr>
 </table>
 
-## CI/CD
+## CI
 
 - **CI** (`.github/workflows/ci.yml`) — on PR and push: Ruff lint, `terraform fmt -check`, `init -backend=false` and `validate` for both `terraform/` and `terraform-bootstrap/`.
-- **CD** (`.github/workflows/cd.yml`) — on push: `terraform plan` (artifact upload), then a manual-approval `apply` in the `dev` environment using the saved plan. AWS credentials come from the OIDC role — no long-lived keys.
 
 ## Make targets
 
